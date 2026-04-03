@@ -1,0 +1,35 @@
+
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "news": "News",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "admin": "Admin Login"
+  },
+  "common": {
+    "search": "Search...",
+    "readMore": "Read full article",
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "submit": "Submit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "home": {
+    "heroTitle": "Building a stronger nation together",
+    "heroDesc": "Committed to transparency, accountability, and public service excellence",
+    "latestNews": "Latest news and updates",
+    "viewAllNews": "View all news"
+  },
+  "news": {
+    "title": "News and updates",
+    "subtitle": "Latest announcements, policies, and official communications",
+    "resultsFound": "{{count}} results found"
+  }
+}

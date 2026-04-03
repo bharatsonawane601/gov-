@@ -1,0 +1,27 @@
+# Node
+node_modules/
+npm-debug.log*
+.npm/
+dist/
+
+# Build outputs
+.next/
+out/
+build/
+
+# PocketBase
+apps/pocketbase/pocketbase.linux
+apps/pocketbase/pb_data/*.db
+apps/pocketbase/pb_data/*.db-shm
+apps/pocketbase/pb_data/*.db-wal
+apps/pocketbase/pb_data/storage/
+
+# System and logs
+.DS_Store
+*.log
+tmp/
+brute_force_key.sh
+
+# Horizons export remnants
+app.tar.gz
+
