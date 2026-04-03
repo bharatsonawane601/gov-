@@ -7,14 +7,14 @@ import { toast } from 'sonner';
 const AdminAuthContext = createContext(null);
 
 export const AdminAuthProvider = ({ children }) => {
-  const [adminUser, setAdminUser] = useState(pb.authStore.model);
+  const [adminUser, setAdminUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
   const logout = useCallback(() => {
-    pb.authStore.clear();
+    localStorage.removeItem('offlineAdminUser');
     setAdminUser(null);
     localStorage.removeItem('adminLastActivity');
     navigate('/admin/login');
@@ -22,7 +22,8 @@ export const AdminAuthProvider = ({ children }) => {
   }, [navigate]);
 
   const checkTimeout = useCallback(() => {
-    if (!pb.authStore.isValid || !pb.authStore.model) return;
+    const savedUser = localStorage.getItem('offlineAdminUser');
+    if (!savedUser) return;
     
     const lastActivity = localStorage.getItem('adminLastActivity');
     if (lastActivity && Date.now() - parseInt(lastActivity, 10) > TIMEOUT_MS) {
@@ -34,16 +35,17 @@ export const AdminAuthProvider = ({ children }) => {
   }, [logout]);
 
   useEffect(() => {
-    setAdminUser(pb.authStore.model);
+    const savedUser = localStorage.getItem('offlineAdminUser');
+    if (savedUser) {
+      setAdminUser(JSON.parse(savedUser));
+    } else {
+      setAdminUser(null);
+    }
     setLoading(false);
-
-    const unsubscribe = pb.authStore.onChange((token, model) => {
-      setAdminUser(model);
-    });
 
     const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
     const updateActivity = () => {
-      if (pb.authStore.isValid) {
+      if (localStorage.getItem('offlineAdminUser')) {
         localStorage.setItem('adminLastActivity', Date.now().toString());
       }
     };
@@ -52,26 +54,26 @@ export const AdminAuthProvider = ({ children }) => {
     const interval = setInterval(checkTimeout, 60000); // Check every minute
 
     return () => {
-      unsubscribe();
       activityEvents.forEach(event => window.removeEventListener(event, updateActivity));
       clearInterval(interval);
     };
   }, [checkTimeout]);
 
   const login = async (email, password, rememberMe) => {
-    try {
-      const authData = await pb.collection('admin_users').authWithPassword(email, password, { $autoCancel: false });
-      setAdminUser(authData.record);
+    // Hardcoded Offline Authentication
+    if (email === "admin@government.com" && password === "SecureAdmin123!") {
+      const mockUser = {
+        id: "offline-admin",
+        email: email,
+        name: "Government Admin",
+        role: "admin",
+      };
+      localStorage.setItem('offlineAdminUser', JSON.stringify(mockUser));
+      setAdminUser(mockUser);
       localStorage.setItem('adminLastActivity', Date.now().toString());
-      
-      // Update last login
-      await pb.collection('admin_users').update(authData.record.id, {
-        last_login: new Date().toISOString()
-      }, { $autoCancel: false });
-
-      return authData;
-    } catch (error) {
-      throw error;
+      return { record: mockUser };
+    } else {
+      throw new Error("Invalid credentials");
     }
   };
 
